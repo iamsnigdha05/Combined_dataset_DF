@@ -1,0 +1,57 @@
+# === MAP THE EXTRACTED STRUCTURE ===
+real_dirs = [
+    os.path.join(extract_dir, 'your path'),
+    os.path.join(extract_dir, 'your path'),
+    os.path.join(extract_dir, 'Celeb-real'),
+    os.path.join(extract_dir, 'YouTube-real'),
+]
+
+fake_dirs = [
+    os.path.join(extract_dir, 'DFD_manipulated_sequences'),
+    os.path.join(extract_dir, 'NeuralTextures_manipulated_sequences'),
+    os.path.join(extract_dir, 'FaceSwap_manipulated_sequences'),
+    os.path.join(extract_dir, 'Face2Face_manipulated_sequences'),
+    os.path.join(extract_dir, 'DF_manipulated_sequences'),
+    os.path.join(extract_dir, 'Celeb-synthesis'),
+]
+
+target_real = 1500 #change with your need
+target_fake = 1500 #change with your need
+
+# === SAMPLING FUNCTION ===
+def collect_files(dirs):
+    all_files = []
+    for d in dirs:
+        if not os.path.exists(d):
+            print(f"Folder not found: {d}")
+            continue
+        files = [os.path.join(d, f) for f in os.listdir(d) if f.endswith(('.mp4', '.avi'))]
+        all_files.extend(files)
+    return all_files
+
+def sample_and_copy(files, n, dest_folder):
+    sampled = random.sample(files, n)
+    os.makedirs(dest_folder, exist_ok=True)
+    for path in sampled:
+        filename = os.path.basename(path)
+        shutil.copy(path, os.path.join(dest_folder, filename))
+    print(f"Copied {n} files to {dest_folder}")
+
+# === PROCESSING ===
+real_files = collect_files(real_dirs)
+fake_files = collect_files(fake_dirs)
+
+print(f"Found {len(real_files)} real and {len(fake_files)} fake videos.")
+
+assert len(real_files) >= target_real, "Not enough real videos!"
+assert len(fake_files) >= target_fake, "Not enough fake videos!"
+
+sample_and_copy(real_files, target_real, os.path.join(output_dir, 'real'))
+sample_and_copy(fake_files, target_fake, os.path.join(output_dir, 'fake'))
+
+print("Balanced dataset ready in your Drive!")
+
+
+
+
+
