@@ -1,0 +1,58 @@
+#CombinedDataset
+import os
+import shutil
+import random
+# === CONFIG ===
+base_path = 'G:/Dataset'  # CHANGE THIS
+output_path = os.path.join(base_path, 'combined_dataset')
+real_dirs = [
+    os.path.join(base_path, 'G:/Dataset/DFD_original sequences'),
+    os.path.join(base_path, 'G:/Dataset/FaceForensic++/FF_original sequences'),
+    os.path.join(base_path, 'G:/Dataset/CelebDF/Celeb-real'),
+    os.path.join(base_path, 'G:/Dataset/CelebDF/YouTube-real')
+]
+fake_dirs = [
+    os.path.join(base_path, 'G:/Dataset/DFD_manipulated_sequences'),
+    os.path.join(base_path, 'G:/Dataset/FaceForensic++/NeuralTextures_manipulated_sequences'),
+    os.path.join(base_path, 'G:/Dataset/FaceForensic++/FaceSwap_manipulated_sequences'),
+    os.path.join(base_path, 'G:/Dataset/FaceForensic++/Face2Face_manipulated_sequences'),
+    os.path.join(base_path, 'G:/Dataset/FaceForensic++/DF_manipulated_sequences'),
+    os.path.join(base_path, 'G:/Dataset/CelebDF/Celeb-synthesis')
+]
+target_real = 1500 # CHANGE THIS
+target_fake = 1500 # CHANGE THIS
+
+# === HELPER FUNCTIONS ===
+def collect_files(dirs):
+    all_files = []
+    for d in dirs:
+        if not os.path.exists(d):
+            print(f"Folder not found: {d}")
+            continue
+        files = [os.path.join(d, f) for f in os.listdir(d)
+                 if f.lower().endswith(('.mp4', '.avi'))]
+        all_files.extend(files)
+    return all_files
+
+def sample_and_copy(files, n, dest_folder):
+    os.makedirs(dest_folder, exist_ok=True)
+    sampled = random.sample(files, n)
+    for i, path in enumerate(sampled):
+        filename = f"{i:05d}_" + os.path.basename(path)
+        shutil.copy(path, os.path.join(dest_folder, filename))
+    print(f"Copied {n} files to {dest_folder}")
+
+# === COLLECT AND BALANCE ===
+real_files = collect_files(real_dirs)
+fake_files = collect_files(fake_dirs)
+
+print(f"Found {len(real_files)} real and {len(fake_files)} fake videos.")
+
+assert len(real_files) >= target_real, "Not enough real videos!"
+assert len(fake_files) >= target_fake, "Not enough fake videos!"
+
+# Copy to output
+sample_and_copy(real_files, target_real, os.path.join(output_path, 'real'))
+sample_and_copy(fake_files, target_fake, os.path.join(output_path, 'fake'))
+
+print("Done: Balanced dataset created locally!")
