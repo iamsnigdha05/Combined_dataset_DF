@@ -1,4 +1,4 @@
-# === MAP THE EXTRACTED STRUCTURE ===
+#MAP THE EXTRACTED STRUCTURE ===
 real_dirs = [
     os.path.join(extract_dir, 'your path'),
     os.path.join(extract_dir, 'your path'),
