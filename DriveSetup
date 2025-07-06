@@ -1,0 +1,22 @@
+#import
+from google.colab import drive
+import os
+import zipfile
+import shutil
+import random
+
+#MountGoogleDrive
+drive.mount('/content/drive')
+
+#CONFIG 
+zip_dir = '/content/drive/MyDrive/DeepfakeZips'
+extract_dir = '/content/datasets'  # Local workspace for faster IO
+output_dir = '/content/drive/MyDrive/balanced_dataset'
+
+#UNZIPALLZIPS
+for zip_file in os.listdir(zip_dir):
+    if zip_file.endswith('.zip'):
+        zip_path = os.path.join(zip_dir, zip_file)
+        print(f"🔓 Unzipping: {zip_file}")
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_dir)
